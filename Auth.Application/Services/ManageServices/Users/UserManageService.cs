@@ -17,29 +17,21 @@ namespace Auth.Application.Services.ManageServices.Users
 			_securityService = securityService;
 		}
 
-		public UserToken CreateUserToken(string username, string password)
+		public UserToken CreateUserToken(User user)
 		{
+			string username = user.UserName;
+			string password = user.Password;
+
 			ValidateUsernameAndPassword(username, password);
 
-			User maybeUser =
-				RetrieveUserByEmailAndPassword(username, password);
-
-			ValidateUserExists(maybeUser);
-			string token = _securityService.CreateToken(maybeUser);
+			ValidateUserExists(user);
+			string token = _securityService.CreateToken(user);
 
 			return new UserToken
 			{
-				Id = maybeUser.Id,
+				Id = user.Id,
 				Token = token
 			};
-		}
-
-		private User RetrieveUserByEmailAndPassword(string username, string password)
-		{
-			IQueryable<User> allUsers = _userService.GetAllUsers();
-
-			return allUsers.FirstOrDefault(retrievedUser => retrievedUser.UserName.Equals(username)
-					&& retrievedUser.Password.Equals(password));
 		}
 	}
 }

@@ -1,8 +1,5 @@
-using System.Text;
 using Auth.Application;
 using Auth.Infrastructure;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Auth.Api
 {
@@ -16,25 +13,8 @@ namespace Auth.Api
 			builder.Services.AddControllers();
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddSwaggerGen();
-			builder.Services.AddApplication();
+			builder.Services.AddApplication(builder.Configuration);
 			builder.Services.AddInfrastructure(builder.Configuration);
-
-			builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-				.AddJwtBearer(options =>
-				{
-					string key = configuration.GetSection("Jwt").GetValue<string>("Key");
-					byte[] convertKeyToBytes = Encoding.UTF8.GetBytes(key);
-
-					options.TokenValidationParameters = new TokenValidationParameters()
-					{
-						ValidateIssuerSigningKey = true,
-						IssuerSigningKey = new SymmetricSecurityKey(convertKeyToBytes),
-						ValidateIssuer = false,
-						ValidateAudience = false,
-						RequireExpirationTime = true,
-						ValidateLifetime = true
-					};
-				});
 
 			var app = builder.Build();
 

@@ -1,5 +1,6 @@
 ﻿using Auth.Application.Abstractions;
 using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
+using Auth.Application.Interfaces.TokenServiceInterfaces;
 using Auth.Domain.Entities;
 
 namespace Auth.Application.Services.CoreServices.Users
@@ -7,12 +8,22 @@ namespace Auth.Application.Services.CoreServices.Users
 	public class UserService : IUserService
 	{
 		private readonly IApplicationDbContext _context;
+		private readonly IToken _token;
 
-		public UserService(IApplicationDbContext context) =>
+		public UserService(
+			IApplicationDbContext context,
+			IToken token)
+		{
 			_context = context;
+			_token = token;
+		}
 
 		public async ValueTask<User> AddUserAsync(User user)
 		{
+			if(user == null) throw new ArgumentNullException(nameof(user));
+
+			user.Password = _token.HashToken(user.Password);
+
 			User maybeUser =
 				await _context.AddAsync(user);
 

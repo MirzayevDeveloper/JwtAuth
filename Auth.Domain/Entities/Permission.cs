@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Auth.Domain.Entities
 {
@@ -8,6 +9,7 @@ namespace Auth.Domain.Entities
 		public Guid Id { get; set; }
 		public string Action { get; set; }
 
+		[JsonIgnore]
 		public virtual ICollection<RolePermission> RolePermissions { get; set; }
 	}
 }

@@ -1,4 +1,6 @@
 ﻿using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
+using Auth.Application.Interfaces.ServiceInterfaces.ManageServiceInterfaces;
+using Auth.Application.Interfaces.ServiceInterfaces.ProcessingServices;
 using Auth.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,9 +13,18 @@ namespace Auth.Api.Controllers
 	public class UserController : ControllerBase
 	{
 		private readonly IUserService _userService;
+		private readonly IUserProcessingService _userProcessingService;
+		private readonly IUserManageService _userManageService;
 
-		public UserController(IUserService userService) =>
+		public UserController(
+			IUserService userService,
+			IUserProcessingService userProcessingService,
+			IUserManageService userManageService)
+		{
 			_userService = userService;
+			_userProcessingService = userProcessingService;
+			_userManageService = userManageService;
+		}
 
 		[HttpPost]
 		[AllowAnonymous]
@@ -35,7 +46,6 @@ namespace Auth.Api.Controllers
 		}
 
 		[HttpGet]
-		[Authorize(Roles = "get_all_users")]
 		public IActionResult GetUserAsync()
 		{
 			IQueryable<User> entities = _userService.GetAllUsers();
@@ -57,6 +67,25 @@ namespace Auth.Api.Controllers
 			User entity = await _userService.DeleteUserAsync(id);
 
 			return Ok(entity);
+		}
+
+		[HttpPost("login")]
+		[AllowAnonymous]
+		public IActionResult LoginAsync(UserCredentials userCredentials)
+		{
+			User maybeUser =
+				_userProcessingService
+					.GetUserByUserCredentials(userCredentials);
+
+			if (maybeUser == null)
+			{
+				return NotFound(userCredentials);
+			}
+
+			UserToken userToken =
+				_userManageService.CreateUserToken(maybeUser);
+
+			return Ok(userToken);
 		}
 	}
 }

@@ -1,4 +1,6 @@
-﻿namespace Auth.Domain.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace Auth.Domain.Entities
 {
 	public class RolePermission
 	{
