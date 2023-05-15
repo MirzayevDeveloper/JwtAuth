@@ -9,7 +9,7 @@ namespace Auth.Api.Controllers
 {
 	[Route("api/users")]
 	[ApiController]
-	[Authorize]
+	//[Authorize]
 	public class UserController : ControllerBase
 	{
 		private readonly IUserService _userService;
@@ -27,7 +27,7 @@ namespace Auth.Api.Controllers
 		}
 
 		[HttpPost]
-		[AllowAnonymous]
+		//[AllowAnonymous]
 		public async ValueTask<IActionResult> PostUserAsync(User user)
 		{
 			user.Id = Guid.NewGuid();
@@ -46,6 +46,7 @@ namespace Auth.Api.Controllers
 		}
 
 		[HttpGet]
+
 		public IActionResult GetUserAsync()
 		{
 			IQueryable<User> entities = _userService.GetAllUsers();
@@ -70,7 +71,7 @@ namespace Auth.Api.Controllers
 		}
 
 		[HttpPost("login")]
-		[AllowAnonymous]
+		//[AllowAnonymous]
 		public IActionResult LoginAsync(UserCredentials userCredentials)
 		{
 			User maybeUser =
