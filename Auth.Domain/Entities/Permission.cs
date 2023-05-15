@@ -7,7 +7,7 @@ namespace Auth.Domain.Entities
 	{
 		[Column("PermissionId")]
 		public Guid Id { get; set; }
-		public string Action { get; set; }
+		public string ActionName { get; set; }
 
 		[JsonIgnore]
 		public virtual ICollection<RolePermission> RolePermissions { get; set; }

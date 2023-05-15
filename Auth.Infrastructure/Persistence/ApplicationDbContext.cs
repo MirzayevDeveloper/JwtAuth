@@ -69,6 +69,12 @@ namespace Auth.Infrastructure.Persistence
 			modelBuilder.ApplyConfiguration(
 				new RolePermissionEntityTypeConfiguration());
 
+			modelBuilder.ApplyConfiguration(
+				new RoleEntityTypeConfiguration());
+
+			modelBuilder.ApplyConfiguration(
+				new UserEntityTypeConfiguration());
+
 			base.OnModelCreating(modelBuilder);
 		}
 	}

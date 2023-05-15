@@ -2,7 +2,6 @@
 using Auth.Application.Interfaces.ServiceInterfaces.ManageServiceInterfaces;
 using Auth.Application.Interfaces.ServiceInterfaces.ProcessingServices;
 using Auth.Domain.Entities;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.Api.Controllers

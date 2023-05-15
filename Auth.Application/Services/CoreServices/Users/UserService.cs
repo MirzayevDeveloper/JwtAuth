@@ -20,7 +20,7 @@ namespace Auth.Application.Services.CoreServices.Users
 
 		public async ValueTask<User> AddUserAsync(User user)
 		{
-			if(user == null) throw new ArgumentNullException(nameof(user));
+			if (user == null) throw new ArgumentNullException(nameof(user));
 
 			user.Password = _token.HashToken(user.Password);
 

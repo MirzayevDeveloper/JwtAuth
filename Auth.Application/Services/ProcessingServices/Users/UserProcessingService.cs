@@ -11,7 +11,7 @@ namespace Auth.Application.Services.ProcessingServices.Users
 		private readonly IToken _token;
 
 		public UserProcessingService(
-			IUserService userService, 
+			IUserService userService,
 			IToken token)
 		{
 			_userService = userService;

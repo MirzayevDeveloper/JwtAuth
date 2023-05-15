@@ -29,7 +29,7 @@ namespace Auth.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("PermissionId");
 
-                    b.Property<string>("Action")
+                    b.Property<string>("ActionName")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
