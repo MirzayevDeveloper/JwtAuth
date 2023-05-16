@@ -3,7 +3,6 @@ using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Application.Interfaces.ServiceInterfaces.ProcessingServicesInterfaces;
 using Auth.Application.Interfaces.TokenServiceInterfaces;
 using Auth.Domain.Entities.Tokens;
-using Auth.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Application.Services.ProcessingServices.RefreshTokens

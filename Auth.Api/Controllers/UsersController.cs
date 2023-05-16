@@ -19,6 +19,7 @@ namespace Auth.Api.Controllers
 	{
 		private readonly IMapper _mapper;
 		private readonly IUserService _userService;
+		private readonly ISecurityService _securityService;
 		private readonly IUserManageService _userManageService;
 		private readonly IUserProcessingService _userProcessingService;
 		private readonly IUserRefreshTokenService _userRefreshTokenService;
@@ -27,6 +28,7 @@ namespace Auth.Api.Controllers
 		public UsersController(
 			IMapper mapper,
 			IUserService userService,
+			ISecurityService securityService,
 			IUserManageService userManageService,
 			IUserProcessingService userProcessingService,
 			IUserRefreshTokenService userRefreshTokenService,
@@ -34,6 +36,7 @@ namespace Auth.Api.Controllers
 		{
 			_mapper = mapper;
 			_userService = userService;
+			_securityService = securityService;
 			_userManageService = userManageService;
 			_userProcessingService = userProcessingService;
 			_userRefreshTokenService = userRefreshTokenService;
@@ -154,16 +157,14 @@ namespace Auth.Api.Controllers
 			return Ok(userToken);
 		}
 
-		[HttpPost("refresh/token"), AllowAnonymous]
+		[HttpPost("{token}"), AllowAnonymous]
 		public async ValueTask<IActionResult> RefreshAsync(UserToken token)
 		{
 			ClaimsPrincipal principals = await
-				_userManageService.GetPrincipalTokenAsync(token);
+				_securityService.GetPrincipalToken(token);
 
 			string username = principals.Identity.Name;
 			string refreshToken = token.RefreshToken;
-
-
 
 			UserRefreshToken maybeRefreshToken =
 				await _refreshTokenProcessingService.GetRefreshToken(token);

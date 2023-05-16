@@ -12,6 +12,6 @@ namespace Auth.Domain.Entities.Tokens
 		public string UserName { get; set; }
 		[Required]
 		public string RefreshToken { get; set; }
-		public bool IsActive { get; set; } = true;
+		public DateTime ExpiredDate { get; set; }
 	}
 }

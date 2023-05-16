@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using Auth.Domain.Entities.Tokens;
 using Auth.Domain.Entities.Users;
 
 namespace Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces
@@ -7,6 +8,6 @@ namespace Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces
 	{
 		string CreateToken(User user);
 		string CreateRefreshToken();
-		ValueTask<ClaimsPrincipal> GetPrincipalToken(string token);
+		ValueTask<ClaimsPrincipal> GetPrincipalToken(UserToken userToken);
 	}
 }

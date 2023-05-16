@@ -38,12 +38,5 @@ namespace Auth.Application.Services.ManageServices.Users
 				RefreshToken = refreshToken,
 			};
 		}
-
-		public async ValueTask<ClaimsPrincipal> GetPrincipalTokenAsync(UserToken token)
-		{
-			string accessToken = token.AccessToken;
-
-			return await _securityService.GetPrincipalToken(accessToken);
-		}
 	}
 }

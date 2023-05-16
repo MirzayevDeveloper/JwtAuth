@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Application.Interfaces.TokenServiceInterfaces;
+using Auth.Domain.Entities.Tokens;
 using Auth.Domain.Entities.Users;
 
 namespace Auth.Application.Services.CoreServices.Security
@@ -24,8 +25,10 @@ namespace Auth.Application.Services.CoreServices.Security
 			return _token.GenerateJWT(user);
 		}
 
-		public async ValueTask<ClaimsPrincipal> GetPrincipalToken(string token)
+		public async ValueTask<ClaimsPrincipal> GetPrincipalToken(UserToken userToken)
 		{
+			string token = userToken.AccessToken;
+
 			return await _token.GetPrincipalFromExpiredToken(token);
 		}
 	}
