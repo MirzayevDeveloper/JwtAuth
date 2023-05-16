@@ -1,6 +1,10 @@
-﻿using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Application.Interfaces.ServiceInterfaces.ManageServiceInterfaces;
 using Auth.Domain.Entities;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Auth.Application.Services.ManageServices.Users
 {
@@ -25,6 +29,7 @@ namespace Auth.Application.Services.ManageServices.Users
 			ValidateUsernameAndPassword(username, password);
 
 			ValidateUserExists(user);
+
 			string token = _securityService.CreateToken(user);
 
 			return new UserToken
@@ -33,5 +38,7 @@ namespace Auth.Application.Services.ManageServices.Users
 				Token = token
 			};
 		}
+
+		
 	}
 }

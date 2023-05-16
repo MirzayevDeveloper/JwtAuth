@@ -1,9 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Auth.Application.DTOs.Users
 {
 	public class UpdateUserDto
 	{
+		[JsonPropertyName("user_id")]
+		public Guid Id { get; set; }
+
 		public string Name { get; set; }
 
 		[Required(ErrorMessage = "Username is required")]

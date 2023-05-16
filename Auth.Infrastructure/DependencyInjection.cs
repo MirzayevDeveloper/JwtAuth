@@ -1,4 +1,5 @@
 ﻿using Auth.Application.Abstractions;
+using Auth.Infrastructure.Mapping;
 using Auth.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +15,8 @@ namespace Auth.Infrastructure
 			{
 				options.UseNpgsql(connectionString: configuration.GetConnectionString("DefaultConnection"));
 			});
+
+			services.AddAutoMapper(typeof(MappingProfile));
 
 			return services;
 		}

@@ -1,5 +1,7 @@
-﻿using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
+﻿using Auth.Application.DTOs.Permissions;
+using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Domain.Entities;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.Api.Controllers
@@ -9,20 +11,23 @@ namespace Auth.Api.Controllers
 	public class PermissionsController : ControllerBase
 	{
 		private readonly IPermissionService _permissionService;
+		private readonly IMapper _mapper;
 
 		public PermissionsController(
-			IPermissionService permissionService)
+			IPermissionService permissionService,
+			IMapper mapper)
 		{
 			_permissionService = permissionService;
+			_mapper = mapper;
 		}
 
 		[HttpPost]
-		public async ValueTask<IActionResult> PostPermissionAsync(Permission permission)
+		public async ValueTask<IActionResult> PostPermissionAsync(PostPermissionDto permission)
 		{
-			permission.Id = Guid.NewGuid();
+			Permission entity = _mapper.Map<Permission>(permission);
 
-			Permission entity = await
-				_permissionService.AddPermissionAsync(permission);
+			entity = await
+				_permissionService.AddPermissionAsync(entity);
 
 			return Ok(entity);
 		}
@@ -33,24 +38,33 @@ namespace Auth.Api.Controllers
 			Permission entity = await
 				_permissionService.GetPermissionByIdAsync(id);
 
-			return Ok(entity);
+			GetPermissionDto dto = 
+				_mapper.Map<GetPermissionDto>(entity);
+
+			return Ok(dto);
 		}
 
 		[HttpGet]
-		public IActionResult GetAllPermissionsAsync()
+		public IActionResult GetAllPermissions()
 		{
-			IQueryable<Permission> entities = _permissionService.GetAllPermissions();
+			IQueryable<Permission> permissions = 
+				_permissionService.GetAllPermissions();
+
+			List<GetPermissionDto> entities =
+				_mapper.Map<List<GetPermissionDto>>(permissions);
 
 			return Ok(entities);
 		}
 
 		[HttpPut]
-		public async ValueTask<IActionResult> PutPermissiosAsync(Permission permission)
-		{
-			Permission entity = await
-				_permissionService.UpdatePermissionAsync(permission);
+		public async ValueTask<IActionResult> PutPermissionAsync(UpdatePermissionDto permission)
+		{ 
+			Permission entity =
+				_mapper.Map<Permission>(permission);
 
-			return Ok(entity);
+			await _permissionService.UpdatePermissionAsync(entity);
+
+			return Ok(permission);
 		}
 
 		[HttpDelete]

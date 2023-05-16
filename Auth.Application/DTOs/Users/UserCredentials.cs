@@ -1,4 +1,4 @@
-﻿namespace Auth.Domain.Entities
+﻿namespace Auth.Application.DTOs.Users
 {
 	public class UserCredentials
 	{

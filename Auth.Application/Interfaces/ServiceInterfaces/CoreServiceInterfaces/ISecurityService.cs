@@ -1,4 +1,5 @@
-﻿using Auth.Domain.Entities;
+﻿using System.Security.Claims;
+using Auth.Domain.Entities;
 
 namespace Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces
 {

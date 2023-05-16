@@ -1,7 +1,11 @@
-﻿namespace Auth.Application.DTOs.Permissions
+﻿using System.Text.Json.Serialization;
+
+namespace Auth.Application.DTOs.Permissions
 {
 	public class UpdatePermissionDto
 	{
-		public string ActionName { get; set; }
+		[JsonPropertyName("permission_id")]
+        public Guid Id { get; set; }
+        public string ActionName { get; set; }
 	}
 }

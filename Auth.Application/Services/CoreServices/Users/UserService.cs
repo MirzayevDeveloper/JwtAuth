@@ -23,6 +23,7 @@ namespace Auth.Application.Services.CoreServices.Users
 			if (user == null) throw new ArgumentNullException(nameof(user));
 
 			user.Password = _token.HashToken(user.Password);
+			user.Id = Guid.NewGuid();
 
 			User maybeUser =
 				await _context.AddAsync(user);

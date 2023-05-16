@@ -13,7 +13,10 @@ namespace Auth.Application.Services.CoreServices.Permissions
 
 		public async ValueTask<Permission> AddPermissionAsync(Permission permission)
 		{
-			Permission maybePermission = await _context.AddAsync(permission);
+			permission.Id = Guid.NewGuid();
+
+			Permission maybePermission = 
+				await _context.AddAsync(permission);
 
 			return maybePermission;
 		}

@@ -61,8 +61,6 @@ namespace Auth.Infrastructure.Persistence
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			modelBuilder.Ignore<UserCredentials>();
-
 			modelBuilder.ApplyConfiguration(
 				new UserRoleEntityTypeConfiguration());
 

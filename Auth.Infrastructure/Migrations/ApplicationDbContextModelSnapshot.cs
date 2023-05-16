@@ -65,6 +65,9 @@ namespace Auth.Infrastructure.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("RoleId");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
@@ -102,9 +105,13 @@ namespace Auth.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("UserName")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserName")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

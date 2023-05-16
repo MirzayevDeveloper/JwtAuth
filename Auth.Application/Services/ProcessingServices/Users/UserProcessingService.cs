@@ -1,4 +1,5 @@
-﻿using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
+﻿using Auth.Application.DTOs.Users;
+using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Application.Interfaces.ServiceInterfaces.ProcessingServices;
 using Auth.Application.Interfaces.TokenServiceInterfaces;
 using Auth.Domain.Entities;
@@ -29,6 +30,14 @@ namespace Auth.Application.Services.ProcessingServices.Users
 
 			return allUsers.FirstOrDefault(user => user.UserName.Equals(username)
 												&& user.Password.Equals(hashedPassword));
+		}
+
+		public User GetUserByUserName(string userName)
+		{
+			User maybeUser = _userService.GetAllUsers()
+				.SingleOrDefault(user => user.UserName.Equals(userName));
+
+			return maybeUser;
 		}
 
 

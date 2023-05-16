@@ -8,10 +8,8 @@ namespace Auth.Domain.Entities
 		[Column("RoleId")]
 		public Guid Id { get; set; }
 
-		[JsonIgnore]
+        public string Name { get; set; }
 		public virtual ICollection<UserRole> UserRoles { get; set; }
-
-		[JsonIgnore]
 		public virtual ICollection<RolePermission> RolePermissions { get; set; }
 	}
 }

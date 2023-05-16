@@ -17,5 +17,7 @@ namespace Auth.Application.Services.CoreServices.Security
 
 			return _token.GenerateJWT(user);
 		}
+
+
 	}
 }
