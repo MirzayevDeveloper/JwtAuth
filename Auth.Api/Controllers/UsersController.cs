@@ -1,7 +1,9 @@
-﻿using Auth.Application.DTOs.Users;
+﻿using System.Security.Claims;
+using Auth.Application.DTOs.Users;
 using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Application.Interfaces.ServiceInterfaces.ManageServiceInterfaces;
 using Auth.Application.Interfaces.ServiceInterfaces.ProcessingServices;
+using Auth.Application.Interfaces.ServiceInterfaces.ProcessingServicesInterfaces;
 using Auth.Domain.Entities.Tokens;
 using Auth.Domain.Entities.Users;
 using AutoMapper;
@@ -19,17 +21,21 @@ namespace Auth.Api.Controllers
 		private readonly IUserProcessingService _userProcessingService;
 		private readonly IUserManageService _userManageService;
 		private readonly IMapper _mapper;
+		private readonly IUserRefreshTokenService _userRefreshTokenService;
+		private readonly IRefreshTokenProcessingInterface _refreshTokenProcessingInterface;
 
 		public UsersController(
+			IMapper mapper,
 			IUserService userService,
-			IUserProcessingService userProcessingService,
 			IUserManageService userManageService,
-			IMapper mapper)
+			IUserProcessingService userProcessingService,
+			IRefreshTokenProcessingInterface refreshTokenProcessingInterface)
 		{
-			_userService = userService;
-			_userProcessingService = userProcessingService;
-			_userManageService = userManageService;
 			_mapper = mapper;
+			_userService = userService;
+			_userManageService = userManageService;
+			_userProcessingService = userProcessingService;
+			_refreshTokenProcessingInterface = refreshTokenProcessingInterface;
 		}
 
 		[HttpPost]
@@ -89,7 +95,7 @@ namespace Auth.Api.Controllers
 			Request.Headers.TryGetValue("Authorization", out var authorization);
 
 			User maybeUser = await _userProcessingService
-				.ValidateTokenForDeleteUser(authorization, user.Password);
+				.ValidateTokenByUserTokenForDeleteUser(authorization, user.Password);
 
 			if (maybeUser == null)
 			{
@@ -102,7 +108,7 @@ namespace Auth.Api.Controllers
 		}
 
 		[HttpPost("login"), AllowAnonymous]
-		public IActionResult LoginAsync([FromBody] UserCredentials userCredentials)
+		public async ValueTask<IActionResult> LoginAsync([FromBody] UserCredentials userCredentials)
 		{
 			User maybeUser =
 				_userProcessingService
@@ -116,7 +122,55 @@ namespace Auth.Api.Controllers
 			UserToken userToken =
 				_userManageService.CreateUserToken(maybeUser);
 
-			return Ok(userToken);
+			var refreshToken = new UserRefreshToken
+			{
+				UserName = userCredentials.UserName,
+				RefreshToken = userToken.RefreshToken,
+			};
+
+			UserRefreshToken userRefreshToken = await
+				_userRefreshTokenService
+					.AddUserRefreshTokensAsync(refreshToken);
+
+			return Ok(userRefreshToken);
+		}
+
+		[HttpPost, AllowAnonymous]
+		public async ValueTask<IActionResult> RefreshAsync(UserToken token)
+		{
+			ClaimsPrincipal principals = await
+				_userManageService.GetPrincipalTokenAsync(token);
+
+			string username = principals.Identity.Name;
+			string refreshToken = token.RefreshToken;
+
+			UserRefreshToken maybeRefreshToken =
+				await _refreshTokenProcessingInterface.GetRefreshToken(token);
+
+			if (!refreshToken.Equals(maybeRefreshToken.RefreshToken))
+			{
+				return Unauthorized("Invalid attempt!");
+			}
+
+			User maybeUser = _userProcessingService.GetUserByUserName(username);
+
+			UserToken newUserToken = _userManageService.CreateUserToken(maybeUser);
+
+			if (newUserToken == null)
+			{
+				return Unauthorized("Invalid attempt!");
+			}
+
+			var userRefresh = new UserRefreshToken
+			{
+				Id = token.Id,
+				RefreshToken = newUserToken.RefreshToken,
+				UserName = username,
+			};
+
+			await _userRefreshTokenService.UpdateUserRefreshTokenAsync(userRefresh);
+
+			return Ok(newUserToken);
 		}
 	}
 }

@@ -8,6 +8,7 @@ namespace Auth.Application.Interfaces.ServiceInterfaces.ProcessingServices
 	{
 		User GetUserByUserCredentials(UserCredentials userCredentials);
 		User GetUserByUserName(string userName);
-		ValueTask<User> ValidateTokenForDeleteUser(StringValues tokenValue, string password);
+		ValueTask<User> ValidateTokenByUserTokenForDeleteUser(StringValues tokenValue, string password);
+		ValueTask<bool> CheckPasswordAsync(User inputUser, User findUser);
 	}
 }

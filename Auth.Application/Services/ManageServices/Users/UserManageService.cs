@@ -1,4 +1,5 @@
-﻿using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
+﻿using System.Security.Claims;
+using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Application.Interfaces.ServiceInterfaces.ManageServiceInterfaces;
 using Auth.Domain.Entities.Tokens;
 using Auth.Domain.Entities.Users;
@@ -28,12 +29,21 @@ namespace Auth.Application.Services.ManageServices.Users
 			ValidateUserExists(user);
 
 			string token = _securityService.CreateToken(user);
+			string refreshToken = _securityService.CreateRefreshToken();
 
 			return new UserToken
 			{
 				Id = user.Id,
-				Token = token
+				AccessToken = token,
+				RefreshToken = refreshToken,
 			};
+		}
+
+		public async ValueTask<ClaimsPrincipal> GetPrincipalTokenAsync(UserToken token)
+		{
+			string accessToken = token.AccessToken;
+
+			return await _securityService.GetPrincipalToken(accessToken);
 		}
 	}
 }

@@ -4,6 +4,7 @@ using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Application.Interfaces.ServiceInterfaces.ProcessingServices;
 using Auth.Application.Interfaces.TokenServiceInterfaces;
 using Auth.Domain.Entities.Users;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
 
 namespace Auth.Application.Services.ProcessingServices.Users
@@ -42,7 +43,7 @@ namespace Auth.Application.Services.ProcessingServices.Users
 			return maybeUser;
 		}
 
-		public async ValueTask<User> ValidateTokenForDeleteUser(StringValues tokenValue, string password)
+		public async ValueTask<User> ValidateTokenByUserTokenForDeleteUser(StringValues tokenValue, string password)
 		{
 			string token = tokenValue.ToString();
 			password = _token.HashToken(password);
@@ -77,6 +78,22 @@ namespace Auth.Application.Services.ProcessingServices.Users
 			User maybeUser = GetUserByUserName(maybeUsername);
 
 			return maybeUser;
+		}
+
+		public async ValueTask<bool> CheckPasswordAsync(User inputUser, User findUser)
+		{
+			User maybeUser = await _userService.GetAllUsers()
+									.SingleOrDefaultAsync(user => user.UserName
+									.Equals(inputUser.UserName));
+
+			if (maybeUser == null)
+			{
+				throw new ArgumentNullException(nameof(inputUser));
+			}
+
+			bool isTrue = maybeUser.Password.Equals(findUser.Password);
+
+			return isTrue;
 		}
 	}
 }

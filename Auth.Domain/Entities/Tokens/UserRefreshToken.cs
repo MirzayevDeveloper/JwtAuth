@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Auth.Domain.Entities.Tokens
 {
 	public class UserRefreshToken
 	{
+		[Column("UserRefreshTokenId")]
 		public Guid Id { get; set; }
 
 		[Required]

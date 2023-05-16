@@ -5,7 +5,7 @@
 namespace Auth.Infrastructure.Migrations
 {
 	/// <inheritdoc />
-	public partial class Init : Migration
+	public partial class Initial : Migration
 	{
 		/// <inheritdoc />
 		protected override void Up(MigrationBuilder migrationBuilder)
@@ -49,13 +49,27 @@ namespace Auth.Infrastructure.Migrations
 				});
 
 			migrationBuilder.CreateTable(
+				name: "UserRefreshTokens",
+				columns: table => new
+				{
+					UserRefreshTokenId = table.Column<Guid>(type: "uuid", nullable: false),
+					UserName = table.Column<string>(type: "text", nullable: false),
+					RefreshToken = table.Column<string>(type: "text", nullable: false),
+					IsActive = table.Column<bool>(type: "boolean", nullable: false)
+				},
+				constraints: table =>
+				{
+					table.PrimaryKey("PK_UserRefreshTokens", x => x.UserRefreshTokenId);
+				});
+
+			migrationBuilder.CreateTable(
 				name: "Users",
 				columns: table => new
 				{
 					UserId = table.Column<Guid>(type: "uuid", nullable: false),
 					Name = table.Column<string>(type: "text", nullable: true),
 					Email = table.Column<string>(type: "text", nullable: true),
-					UserName = table.Column<string>(type: "text", nullable: false),
+					UserName = table.Column<string>(type: "text", nullable: true),
 					Password = table.Column<string>(type: "text", nullable: true)
 				},
 				constraints: table =>
@@ -117,6 +131,12 @@ namespace Auth.Infrastructure.Migrations
 				column: "PermissionId");
 
 			migrationBuilder.CreateIndex(
+				name: "IX_UserRefreshTokens_UserName",
+				table: "UserRefreshTokens",
+				column: "UserName",
+				unique: true);
+
+			migrationBuilder.CreateIndex(
 				name: "IX_UserRoles_RoleId",
 				table: "UserRoles",
 				column: "RoleId");
@@ -136,6 +156,9 @@ namespace Auth.Infrastructure.Migrations
 
 			migrationBuilder.DropTable(
 				name: "RolePermissions");
+
+			migrationBuilder.DropTable(
+				name: "UserRefreshTokens");
 
 			migrationBuilder.DropTable(
 				name: "UserRoles");
