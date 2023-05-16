@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+using Auth.Domain.Entities.RolePermissions;
 
-namespace Auth.Domain.Entities
+namespace Auth.Domain.Entities.Permissions
 {
 	public class Permission
 	{

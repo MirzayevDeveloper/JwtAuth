@@ -1,6 +1,6 @@
 ﻿using Auth.Application.Abstractions;
 using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
-using Auth.Domain.Entities;
+using Auth.Domain.Entities.Permissions;
 
 namespace Auth.Application.Services.CoreServices.Permissions
 {
@@ -15,7 +15,7 @@ namespace Auth.Application.Services.CoreServices.Permissions
 		{
 			permission.Id = Guid.NewGuid();
 
-			Permission maybePermission = 
+			Permission maybePermission =
 				await _context.AddAsync(permission);
 
 			return maybePermission;

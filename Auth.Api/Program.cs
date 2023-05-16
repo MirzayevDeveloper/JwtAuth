@@ -53,7 +53,7 @@ namespace Auth.Api
 			}
 
 			app.UseHttpsRedirection();
-			 app.UseAuthentication();
+			app.UseAuthentication();
 			app.UseAuthorization();
 			app.MapControllers();
 			app.Run();

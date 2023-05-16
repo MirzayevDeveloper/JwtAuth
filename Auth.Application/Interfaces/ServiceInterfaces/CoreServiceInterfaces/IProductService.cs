@@ -1,4 +1,4 @@
-﻿using Auth.Domain.Entities;
+﻿using Auth.Domain.Entities.Products;
 
 namespace Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces
 {

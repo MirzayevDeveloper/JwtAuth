@@ -3,7 +3,8 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Auth.Application.Interfaces.TokenServiceInterfaces;
-using Auth.Domain.Entities;
+using Auth.Domain.Entities.Tokens;
+using Auth.Domain.Entities.Users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -34,8 +35,8 @@ namespace Auth.Application.Services.Tokens
 			var claims = new Claim[]
 			{
 				new Claim("UserName", user.UserName),
-				new Claim(ClaimTypes.Email, user.Email),
 				new Claim("Password", user.Password),
+				new Claim(ClaimTypes.Email, user.Email),
 				new Claim(ClaimTypes.Role, "GetAll")
 			};
 
@@ -69,7 +70,7 @@ namespace Auth.Application.Services.Tokens
 			}
 		}
 
-		public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+		public async ValueTask<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token)
 		{
 			var Key = Encoding.UTF8.GetBytes(_tokenConfiguration.Key);
 
@@ -91,7 +92,17 @@ namespace Auth.Application.Services.Tokens
 				throw new SecurityTokenException("Invalid token");
 			}
 
-			return principal;
+			return await Task.FromResult(principal);
+		}
+
+		public string GetTokenFromHeader(string token)
+		{
+			int startIndex = token.IndexOf(' ') + 1;
+			int subStringLength = token.Length - startIndex;
+
+			string subString = token.Substring(startIndex, subStringLength);
+
+			return subString;
 		}
 	}
 }

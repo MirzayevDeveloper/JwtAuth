@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Auth.Domain.Entities;
+using Auth.Domain.Entities.Users;
 
 namespace Auth.Application.Interfaces.TokenServiceInterfaces
 {
@@ -8,6 +8,7 @@ namespace Auth.Application.Interfaces.TokenServiceInterfaces
 		string GenerateJWT(User user);
 		string GenerateRefreshToken();
 		string HashToken(string password);
-		ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
+		ValueTask<ClaimsPrincipal> GetPrincipalFromExpiredToken(string token);
+		string GetTokenFromHeader(string token);
 	}
 }

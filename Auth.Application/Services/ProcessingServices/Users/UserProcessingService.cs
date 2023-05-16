@@ -1,8 +1,10 @@
-﻿using Auth.Application.DTOs.Users;
+﻿using System.Security.Claims;
+using Auth.Application.DTOs.Users;
 using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Application.Interfaces.ServiceInterfaces.ProcessingServices;
 using Auth.Application.Interfaces.TokenServiceInterfaces;
-using Auth.Domain.Entities;
+using Auth.Domain.Entities.Users;
+using Microsoft.Extensions.Primitives;
 
 namespace Auth.Application.Services.ProcessingServices.Users
 {
@@ -40,6 +42,41 @@ namespace Auth.Application.Services.ProcessingServices.Users
 			return maybeUser;
 		}
 
+		public async ValueTask<User> ValidateTokenForDeleteUser(StringValues tokenValue, string password)
+		{
+			string token = tokenValue.ToString();
+			password = _token.HashToken(password);
 
+			if (token == null || password == null)
+			{
+				return null;
+			}
+
+			token = _token.GetTokenFromHeader(token);
+
+			ClaimsPrincipal principals =
+				await _token.GetPrincipalFromExpiredToken(token);
+
+			var keys = new Dictionary<string, string>();
+
+			foreach (var item in principals.Claims)
+			{
+				keys.TryAdd(item.Type, item.Value);
+			}
+
+			keys.TryGetValue("UserName", out string maybeUsername);
+
+			keys.TryGetValue("Password", out string maybePassword);
+
+
+			if (maybePassword != password && maybeUsername != null)
+			{
+				return null;
+			}
+
+			User maybeUser = GetUserByUserName(maybeUsername);
+
+			return maybeUser;
+		}
 	}
 }

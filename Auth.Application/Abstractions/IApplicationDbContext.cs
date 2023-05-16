@@ -1,4 +1,10 @@
-﻿using Auth.Domain.Entities;
+﻿using Auth.Domain.Entities.Permissions;
+using Auth.Domain.Entities.Products;
+using Auth.Domain.Entities.RolePermissions;
+using Auth.Domain.Entities.Roles;
+using Auth.Domain.Entities.Tokens;
+using Auth.Domain.Entities.UserRoles;
+using Auth.Domain.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Application.Abstractions
@@ -11,6 +17,7 @@ namespace Auth.Application.Abstractions
 		DbSet<RolePermission> RolePermissions { get; set; }
 		DbSet<UserRole> UserRoles { get; set; }
 		DbSet<Product> Products { get; set; }
+		DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
 
 
 		public ValueTask<T> AddAsync<T>(T @object);

@@ -1,6 +1,6 @@
 ﻿using Auth.Application.DTOs.Permissions;
 using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
-using Auth.Domain.Entities;
+using Auth.Domain.Entities.Permissions;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,7 +38,7 @@ namespace Auth.Api.Controllers
 			Permission entity = await
 				_permissionService.GetPermissionByIdAsync(id);
 
-			GetPermissionDto dto = 
+			GetPermissionDto dto =
 				_mapper.Map<GetPermissionDto>(entity);
 
 			return Ok(dto);
@@ -47,7 +47,7 @@ namespace Auth.Api.Controllers
 		[HttpGet]
 		public IActionResult GetAllPermissions()
 		{
-			IQueryable<Permission> permissions = 
+			IQueryable<Permission> permissions =
 				_permissionService.GetAllPermissions();
 
 			List<GetPermissionDto> entities =
@@ -58,7 +58,7 @@ namespace Auth.Api.Controllers
 
 		[HttpPut]
 		public async ValueTask<IActionResult> PutPermissionAsync(UpdatePermissionDto permission)
-		{ 
+		{
 			Permission entity =
 				_mapper.Map<Permission>(permission);
 

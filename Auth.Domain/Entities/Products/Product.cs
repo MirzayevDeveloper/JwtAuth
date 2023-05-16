@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Auth.Domain.Entities
+namespace Auth.Domain.Entities.Products
 {
 	public class Product
 	{

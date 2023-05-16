@@ -1,5 +1,11 @@
 ﻿using Auth.Application.Abstractions;
-using Auth.Domain.Entities;
+using Auth.Domain.Entities.Permissions;
+using Auth.Domain.Entities.Products;
+using Auth.Domain.Entities.RolePermissions;
+using Auth.Domain.Entities.Roles;
+using Auth.Domain.Entities.Tokens;
+using Auth.Domain.Entities.UserRoles;
+using Auth.Domain.Entities.Users;
 using Auth.Infrastructure.Persistence.EntityTypeConfigurations;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +25,7 @@ namespace Auth.Infrastructure.Persistence
 		public DbSet<RolePermission> RolePermissions { get; set; }
 		public DbSet<UserRole> UserRoles { get; set; }
 		public DbSet<Product> Products { get; set; }
+		public DbSet<UserRefreshToken> UserRefreshTokens { get; set; }
 
 		public async ValueTask<T> AddAsync<T>(T @object)
 		{

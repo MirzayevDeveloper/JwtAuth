@@ -1,10 +1,7 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
+﻿using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Application.Interfaces.ServiceInterfaces.ManageServiceInterfaces;
-using Auth.Domain.Entities;
-using Microsoft.IdentityModel.Tokens;
+using Auth.Domain.Entities.Tokens;
+using Auth.Domain.Entities.Users;
 
 namespace Auth.Application.Services.ManageServices.Users
 {
@@ -38,7 +35,5 @@ namespace Auth.Application.Services.ManageServices.Users
 				Token = token
 			};
 		}
-
-		
 	}
 }

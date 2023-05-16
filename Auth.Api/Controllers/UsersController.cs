@@ -1,31 +1,26 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Security.Claims;
-using System.Text;
-using Auth.Application.DTOs.Users;
+﻿using Auth.Application.DTOs.Users;
 using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Application.Interfaces.ServiceInterfaces.ManageServiceInterfaces;
 using Auth.Application.Interfaces.ServiceInterfaces.ProcessingServices;
-using Auth.Domain.Entities;
+using Auth.Domain.Entities.Tokens;
+using Auth.Domain.Entities.Users;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Any;
 
 namespace Auth.Api.Controllers
 {
 	[Route("api/users")]
 	[ApiController]
 	[Authorize]
-	public class UserController : ControllerBase
+	public class UsersController : ControllerBase
 	{
 		private readonly IUserService _userService;
 		private readonly IUserProcessingService _userProcessingService;
 		private readonly IUserManageService _userManageService;
 		private readonly IMapper _mapper;
 
-		public UserController(
+		public UsersController(
 			IUserService userService,
 			IUserProcessingService userProcessingService,
 			IUserManageService userManageService,
@@ -91,20 +86,19 @@ namespace Auth.Api.Controllers
 		[HttpDelete]
 		public async ValueTask<IActionResult> DeleteUserAsync([FromBody] DeleteUserDto user)
 		{
-			//User entity = await _userService.DeleteUserAsync();
+			Request.Headers.TryGetValue("Authorization", out var authorization);
 
-			Request.Headers.TryGetValue("Authorization", out var s);
+			User maybeUser = await _userProcessingService
+				.ValidateTokenForDeleteUser(authorization, user.Password);
 
-			string a = s.ToString().Substring(
-					s.ToString().IndexOf(' '),
-					s.ToString().Length - s.ToString()
-					.IndexOf(' '));
+			if (maybeUser == null)
+			{
+				return Unauthorized(user.Password);
+			}
 
-			///var deserialize = ///DeserializeJwt(a, "dh%8sadjGfjh&657HVD%NfrUNHG5689hgfgfasdn98q273bfq987wbecaubcq043n");
+			await _userService.DeleteUserAsync(maybeUser.Id);
 
-			
-
-			return Ok();
+			return Ok($"{maybeUser.UserName} user successfully deleted");
 		}
 
 		[HttpPost("login"), AllowAnonymous]
@@ -124,7 +118,5 @@ namespace Auth.Api.Controllers
 
 			return Ok(userToken);
 		}
-
-		
 	}
 }

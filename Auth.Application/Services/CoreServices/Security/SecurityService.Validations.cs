@@ -1,5 +1,5 @@
 ﻿using Auth.Application.Services.CoreServices.Security.Exceptions;
-using Auth.Domain.Entities;
+using Auth.Domain.Entities.Users;
 
 namespace Auth.Application.Services.CoreServices.Security
 {

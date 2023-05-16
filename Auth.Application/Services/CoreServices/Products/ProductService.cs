@@ -1,6 +1,6 @@
 ﻿using Auth.Application.Abstractions;
 using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
-using Auth.Domain.Entities;
+using Auth.Domain.Entities.Products;
 
 namespace Auth.Application.Services.CoreServices.Products
 {

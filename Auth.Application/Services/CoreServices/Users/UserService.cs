@@ -1,7 +1,7 @@
 ﻿using Auth.Application.Abstractions;
 using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Application.Interfaces.TokenServiceInterfaces;
-using Auth.Domain.Entities;
+using Auth.Domain.Entities.Users;
 
 namespace Auth.Application.Services.CoreServices.Users
 {

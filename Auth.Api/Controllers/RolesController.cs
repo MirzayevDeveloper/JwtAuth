@@ -1,5 +1,5 @@
 ﻿using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
-using Auth.Domain.Entities;
+using Auth.Domain.Entities.Roles;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.Api.Controllers

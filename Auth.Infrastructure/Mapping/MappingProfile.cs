@@ -1,6 +1,6 @@
 ﻿using Auth.Application.Abstractions;
 using Auth.Application.DTOs.Users;
-using Auth.Domain.Entities;
+using Auth.Domain.Entities.Users;
 using AutoMapper;
 
 namespace Auth.Infrastructure.Mapping
