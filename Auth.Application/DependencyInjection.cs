@@ -34,7 +34,7 @@ namespace Auth.Application
 			services.AddTransient<IPermissionService, PermissionService>();
 			services.AddTransient<IUserProcessingService, UserProcessingService>();
 			services.AddTransient<IUserRefreshTokenService, UserRefreshTokenService>();
-			services.AddTransient<IRefreshTokenProcessingInterface, RefreshTokenProcessingInterface>();
+			services.AddTransient<IRefreshTokenProcessingServiceInterface, RefreshTokenProcessingInterface>();
 
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 				.AddJwtBearer(options =>

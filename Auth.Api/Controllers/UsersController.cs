@@ -17,25 +17,27 @@ namespace Auth.Api.Controllers
 	[Authorize]
 	public class UsersController : ControllerBase
 	{
-		private readonly IUserService _userService;
-		private readonly IUserProcessingService _userProcessingService;
-		private readonly IUserManageService _userManageService;
 		private readonly IMapper _mapper;
+		private readonly IUserService _userService;
+		private readonly IUserManageService _userManageService;
+		private readonly IUserProcessingService _userProcessingService;
 		private readonly IUserRefreshTokenService _userRefreshTokenService;
-		private readonly IRefreshTokenProcessingInterface _refreshTokenProcessingInterface;
+		private readonly IRefreshTokenProcessingServiceInterface _refreshTokenProcessingService;
 
 		public UsersController(
 			IMapper mapper,
 			IUserService userService,
 			IUserManageService userManageService,
 			IUserProcessingService userProcessingService,
-			IRefreshTokenProcessingInterface refreshTokenProcessingInterface)
+			IUserRefreshTokenService userRefreshTokenService,
+			IRefreshTokenProcessingServiceInterface refreshTokenProcessingInterface)
 		{
 			_mapper = mapper;
 			_userService = userService;
 			_userManageService = userManageService;
 			_userProcessingService = userProcessingService;
-			_refreshTokenProcessingInterface = refreshTokenProcessingInterface;
+			_userRefreshTokenService = userRefreshTokenService;
+			_refreshTokenProcessingService = refreshTokenProcessingInterface;
 		}
 
 		[HttpPost]
@@ -119,23 +121,40 @@ namespace Auth.Api.Controllers
 				return NotFound(userCredentials);
 			}
 
+			UserRefreshToken userRefresh = await _refreshTokenProcessingService
+						.GetRefreshTokenByUsername(maybeUser.UserName);
+
 			UserToken userToken =
 				_userManageService.CreateUserToken(maybeUser);
 
-			var refreshToken = new UserRefreshToken
+
+			if (userRefresh == null)
 			{
-				UserName = userCredentials.UserName,
-				RefreshToken = userToken.RefreshToken,
-			};
+				var refreshToken = new UserRefreshToken
+				{
+					UserName = userCredentials.UserName,
+					RefreshToken = userToken.RefreshToken,
+				};
 
-			UserRefreshToken userRefreshToken = await
-				_userRefreshTokenService
-					.AddUserRefreshTokensAsync(refreshToken);
 
-			return Ok(userRefreshToken);
+				UserRefreshToken userRefreshToken =
+					await _userRefreshTokenService
+						.AddUserRefreshTokensAsync(refreshToken);
+
+				return Ok(userToken);
+			}
+
+			UserRefreshToken secondRefreshToken = await
+				_refreshTokenProcessingService.GetRefreshTokenByUsername(maybeUser.UserName);
+
+			secondRefreshToken.RefreshToken = userToken.RefreshToken;
+
+			await _userRefreshTokenService.UpdateUserRefreshTokenAsync(secondRefreshToken);
+
+			return Ok(userToken);
 		}
 
-		[HttpPost, AllowAnonymous]
+		[HttpPost("refresh/token"), AllowAnonymous]
 		public async ValueTask<IActionResult> RefreshAsync(UserToken token)
 		{
 			ClaimsPrincipal principals = await
@@ -144,8 +163,10 @@ namespace Auth.Api.Controllers
 			string username = principals.Identity.Name;
 			string refreshToken = token.RefreshToken;
 
+
+
 			UserRefreshToken maybeRefreshToken =
-				await _refreshTokenProcessingInterface.GetRefreshToken(token);
+				await _refreshTokenProcessingService.GetRefreshToken(token);
 
 			if (!refreshToken.Equals(maybeRefreshToken.RefreshToken))
 			{

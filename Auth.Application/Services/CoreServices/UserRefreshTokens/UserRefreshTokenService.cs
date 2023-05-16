@@ -69,9 +69,17 @@ namespace Auth.Application.Services.CoreServices.UserRefreshTokens
 			return maybeUserRefreshToken;
 		}
 
-		public ValueTask<UserRefreshToken> UpdateUserRefreshTokenAsync(UserRefreshToken userRefresh)
+		public async ValueTask<UserRefreshToken> UpdateUserRefreshTokenAsync(UserRefreshToken userRefresh)
 		{
-			throw new NotImplementedException();
+			UserRefreshToken maybeRefreshToken = 
+				await _context.UpdateAsync<UserRefreshToken>(userRefresh);
+
+			if(maybeRefreshToken == null)
+			{
+				throw new ArgumentNullException(nameof(maybeRefreshToken));
+			}
+
+			return maybeRefreshToken;
 		}
 	}
 }

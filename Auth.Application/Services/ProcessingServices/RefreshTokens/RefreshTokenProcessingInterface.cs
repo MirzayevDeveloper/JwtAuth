@@ -3,20 +3,25 @@ using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Application.Interfaces.ServiceInterfaces.ProcessingServicesInterfaces;
 using Auth.Application.Interfaces.TokenServiceInterfaces;
 using Auth.Domain.Entities.Tokens;
+using Auth.Domain.Entities.Users;
+using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Application.Services.ProcessingServices.RefreshTokens
 {
-	public class RefreshTokenProcessingInterface : IRefreshTokenProcessingInterface
+	public class RefreshTokenProcessingInterface : IRefreshTokenProcessingServiceInterface
 	{
-		private readonly IUserRefreshTokenService _userRefreshTokenService;
 		private readonly IToken _token;
+		private readonly IUserService _userService;
+		private readonly IUserRefreshTokenService _userRefreshTokenService;
 
 		public RefreshTokenProcessingInterface(
-			IUserRefreshTokenService service,
-			IToken token)
+			IToken token,
+			IUserService userService,
+			IUserRefreshTokenService service)
 		{
-			_userRefreshTokenService = service;
 			_token = token;
+			_userService = userService;
+			_userRefreshTokenService = service;
 		}
 
 		public async ValueTask<UserRefreshToken> GetRefreshToken(UserToken userToken)
@@ -33,6 +38,14 @@ namespace Auth.Application.Services.ProcessingServices.RefreshTokens
 				.GetUserRefreshTokenByUsernameAndRefreshTokenAsync(username, refreshToken);
 
 			return maybeRefreshToken;
+		}
+
+		public async ValueTask<UserRefreshToken> GetRefreshTokenByUsername(string username)
+		{
+			UserRefreshToken refreshToken = await _userRefreshTokenService.GetAllUserRefreshTokens()
+				.SingleOrDefaultAsync(refresh => refresh.UserName.Equals(username));
+
+			return refreshToken;
 		}
 	}
 }
