@@ -55,6 +55,7 @@ namespace Auth.Application
 						ValidateLifetime = true,
 						ValidAudience = audience,
 						ValidIssuer = issuer,
+						ClockSkew = TimeSpan.Zero
 					};
 				});
 

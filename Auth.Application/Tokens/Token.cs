@@ -44,7 +44,7 @@ namespace Auth.Application.Services.Tokens
 				issuer: _tokenConfiguration.Issuer,
 				audience: _tokenConfiguration.Audience,
 				claims: claims,
-				expires: DateTime.UtcNow.ToLocalTime().AddMinutes(_tokenConfiguration.AccessTokenExpires),
+				expires: DateTime.UtcNow.AddMinutes(_tokenConfiguration.AccessTokenExpires),
 				signingCredentials: credentials
 				);
 

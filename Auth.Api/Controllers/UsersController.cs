@@ -141,7 +141,7 @@ namespace Auth.Api.Controllers
 				{
 					UserName = userCredentials.UserName,
 					RefreshToken = userToken.RefreshToken,
-					ExpiredDate = DateTimeOffset.UtcNow.AddMinutes(_tokenConfiguration.AccessTokenExpires)
+					ExpiredDate = DateTime.UtcNow.AddMinutes(_tokenConfiguration.AccessTokenExpires)
 				};
 
 				UserRefreshToken userRefreshToken =
@@ -154,7 +154,7 @@ namespace Auth.Api.Controllers
 			userRefresh.RefreshToken = userToken.RefreshToken;
 
 			userRefresh.ExpiredDate =
-				DateTimeOffset.UtcNow.AddMinutes(_tokenConfiguration.AccessTokenExpires);
+				DateTime.UtcNow.AddMinutes(_tokenConfiguration.AccessTokenExpires);
 
 			await _userRefreshTokenService.UpdateUserRefreshTokenAsync(userRefresh);
 
@@ -192,7 +192,7 @@ namespace Auth.Api.Controllers
 			refreshTokenExpired = refreshTokenExpired
 				.AddMinutes(_tokenConfiguration.RefreshTokenExpires);
 
-			DateTimeOffset currentDatetime = DateTimeOffset.UtcNow.ToLocalTime();
+			DateTime currentDatetime = DateTime.UtcNow;
 
 			if (currentDatetime >= refreshTokenExpired)
 			{
