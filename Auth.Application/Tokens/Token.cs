@@ -34,7 +34,7 @@ namespace Auth.Application.Services.Tokens
 
 			var claims = new Claim[]
 			{
-				new Claim("UserName", user.UserName),
+				new Claim(ClaimTypes.Name, user.UserName),
 				new Claim("Password", user.Password),
 				new Claim(ClaimTypes.Email, user.Email),
 				new Claim(ClaimTypes.Role, "GetAll")
@@ -44,7 +44,7 @@ namespace Auth.Application.Services.Tokens
 				issuer: _tokenConfiguration.Issuer,
 				audience: _tokenConfiguration.Audience,
 				claims: claims,
-				expires: DateTime.UtcNow.AddDays(1),
+				expires: DateTime.UtcNow.ToLocalTime().AddMinutes(_tokenConfiguration.AccessTokenExpires),
 				signingCredentials: credentials
 				);
 
@@ -53,12 +53,11 @@ namespace Auth.Application.Services.Tokens
 
 		public string GenerateRefreshToken()
 		{
-			var randomNumber = new byte[32];
-			using (var rng = RandomNumberGenerator.Create())
-			{
-				rng.GetBytes(randomNumber);
-				return Convert.ToBase64String(randomNumber);
-			}
+			string key = HashToken(_tokenConfiguration.Key);
+			string dateTime = HashToken(DateTime.UtcNow.ToString());
+			string refreshToken = key + dateTime;
+
+			return refreshToken;
 		}
 
 		public string HashToken(string password)

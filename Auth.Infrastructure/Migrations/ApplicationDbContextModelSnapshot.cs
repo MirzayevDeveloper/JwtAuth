@@ -92,10 +92,9 @@ namespace Auth.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("UserRefreshTokenId");
+                        .HasColumnType("uuid");
 
-                    b.Property<DateTime>("ExpiredDate")
+                    b.Property<DateTimeOffset>("ExpiredDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("RefreshToken")

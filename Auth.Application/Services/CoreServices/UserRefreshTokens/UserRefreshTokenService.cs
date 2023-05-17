@@ -1,6 +1,7 @@
 ﻿using Auth.Application.Abstractions;
 using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Domain.Entities.Tokens;
+using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Application.Services.CoreServices.UserRefreshTokens
 {
@@ -56,15 +57,14 @@ namespace Auth.Application.Services.CoreServices.UserRefreshTokens
 
 		public async ValueTask<UserRefreshToken> GetUserRefreshTokenByUsernameAndRefreshTokenAsync(string username, string refreshToken)
 		{
-			IQueryable<UserRefreshToken> entities =
-				_context.GetAll<UserRefreshToken>();
+			List<UserRefreshToken> entities = await
+				_context.GetAll<UserRefreshToken>().ToListAsync();
 
 			UserRefreshToken maybeUserRefreshToken =
-				entities.SingleOrDefault(refresh =>
-					refresh.UserName.Equals(username) &&
-					refresh.RefreshToken.Equals(refresh));
+				entities.Find(rf => rf.UserName.Equals(username) &&
+							rf.RefreshToken.Equals(refreshToken));
 
-			ValidateRefreshTokenIsNotNull(maybeUserRefreshToken);
+			//ValidateRefreshTokenIsNotNull(maybeUserRefreshToken);
 
 			return maybeUserRefreshToken;
 		}

@@ -40,16 +40,21 @@ namespace Auth.Application
 				.AddJwtBearer(options =>
 				{
 					string key = configuration.GetSection("Jwt").GetValue<string>("Key");
+					string audience = configuration.GetSection("Jwt").GetValue<string>("Audience");
+					string issuer = configuration.GetSection("Jwt").GetValue<string>("Issuer");
 					byte[] convertKeyToBytes = Encoding.UTF8.GetBytes(key);
+					options.SaveToken = true;
 
 					options.TokenValidationParameters = new TokenValidationParameters()
 					{
 						ValidateIssuerSigningKey = true,
 						IssuerSigningKey = new SymmetricSecurityKey(convertKeyToBytes),
-						ValidateIssuer = false,
-						ValidateAudience = false,
+						ValidateIssuer = true,
+						ValidateAudience = true,
 						RequireExpirationTime = true,
-						ValidateLifetime = true
+						ValidateLifetime = true,
+						ValidAudience = audience,
+						ValidIssuer = issuer,
 					};
 				});
 

@@ -21,6 +21,7 @@ namespace Auth.Api.Controllers
 		private readonly IUserService _userService;
 		private readonly ISecurityService _securityService;
 		private readonly IUserManageService _userManageService;
+		private readonly TokenConfiguration _tokenConfiguration;
 		private readonly IUserProcessingService _userProcessingService;
 		private readonly IUserRefreshTokenService _userRefreshTokenService;
 		private readonly IRefreshTokenProcessingServiceInterface _refreshTokenProcessingService;
@@ -28,6 +29,7 @@ namespace Auth.Api.Controllers
 		public UsersController(
 			IMapper mapper,
 			IUserService userService,
+			IConfiguration configuration,
 			ISecurityService securityService,
 			IUserManageService userManageService,
 			IUserProcessingService userProcessingService,
@@ -41,6 +43,9 @@ namespace Auth.Api.Controllers
 			_userProcessingService = userProcessingService;
 			_userRefreshTokenService = userRefreshTokenService;
 			_refreshTokenProcessingService = refreshTokenProcessingInterface;
+
+			_tokenConfiguration = new TokenConfiguration();
+			configuration.Bind("Jwt", _tokenConfiguration);
 		}
 
 		[HttpPost]
@@ -64,7 +69,7 @@ namespace Auth.Api.Controllers
 		}
 
 		[HttpGet("{id}")]
-		public async ValueTask<IActionResult> GetUserAsync([FromBody] Guid id)
+		public async ValueTask<IActionResult> GetUserAsync(Guid id)
 		{
 			User maybeUser = await _userService.GetUserByIdAsync(id);
 
@@ -73,7 +78,7 @@ namespace Auth.Api.Controllers
 			return Ok(maybeUser);
 		}
 
-		[HttpGet, Authorize(Roles = "GetAll")]
+		[HttpGet, Authorize]
 		public IActionResult GetAllUsers()
 		{
 			IQueryable<User> users = _userService.GetAllUsers();
@@ -125,11 +130,10 @@ namespace Auth.Api.Controllers
 			}
 
 			UserRefreshToken userRefresh = await _refreshTokenProcessingService
-						.GetRefreshTokenByUsername(maybeUser.UserName);
+							.GetRefreshTokenByUsername(maybeUser.UserName);
 
 			UserToken userToken =
 				_userManageService.CreateUserToken(maybeUser);
-
 
 			if (userRefresh == null)
 			{
@@ -137,8 +141,8 @@ namespace Auth.Api.Controllers
 				{
 					UserName = userCredentials.UserName,
 					RefreshToken = userToken.RefreshToken,
+					ExpiredDate = DateTimeOffset.UtcNow.AddMinutes(_tokenConfiguration.AccessTokenExpires)
 				};
-
 
 				UserRefreshToken userRefreshToken =
 					await _userRefreshTokenService
@@ -147,52 +151,84 @@ namespace Auth.Api.Controllers
 				return Ok(userToken);
 			}
 
-			UserRefreshToken secondRefreshToken = await
-				_refreshTokenProcessingService.GetRefreshTokenByUsername(maybeUser.UserName);
+			userRefresh.RefreshToken = userToken.RefreshToken;
 
-			secondRefreshToken.RefreshToken = userToken.RefreshToken;
+			userRefresh.ExpiredDate =
+				DateTimeOffset.UtcNow.AddMinutes(_tokenConfiguration.AccessTokenExpires);
 
-			await _userRefreshTokenService.UpdateUserRefreshTokenAsync(secondRefreshToken);
+			await _userRefreshTokenService.UpdateUserRefreshTokenAsync(userRefresh);
 
 			return Ok(userToken);
 		}
 
-		[HttpPost("{token}"), AllowAnonymous]
+		[HttpPost("refresh/token"), AllowAnonymous]
 		public async ValueTask<IActionResult> RefreshAsync(UserToken token)
 		{
 			ClaimsPrincipal principals = await
 				_securityService.GetPrincipalToken(token);
 
 			string username = principals.Identity.Name;
-			string refreshToken = token.RefreshToken;
+			string inputRefreshToken = token.RefreshToken;
 
-			UserRefreshToken maybeRefreshToken =
+			UserRefreshToken maybeRefreshTokenModel =
 				await _refreshTokenProcessingService.GetRefreshToken(token);
 
-			if (!refreshToken.Equals(maybeRefreshToken.RefreshToken))
+			if(maybeRefreshTokenModel == null)
 			{
 				return Unauthorized("Invalid attempt!");
 			}
 
-			User maybeUser = _userProcessingService.GetUserByUserName(username);
-
-			UserToken newUserToken = _userManageService.CreateUserToken(maybeUser);
-
-			if (newUserToken == null)
+			if (!inputRefreshToken.Equals(maybeRefreshTokenModel.RefreshToken))
 			{
 				return Unauthorized("Invalid attempt!");
 			}
 
-			var userRefresh = new UserRefreshToken
+			DateTimeOffset tokenExpired = maybeRefreshTokenModel.ExpiredDate;
+
+			DateTimeOffset refreshTokenExpired =
+				tokenExpired - TimeSpan.FromMinutes(
+					_tokenConfiguration.AccessTokenExpires);
+
+			refreshTokenExpired = refreshTokenExpired
+				.AddMinutes(_tokenConfiguration.RefreshTokenExpires);
+
+			DateTimeOffset currentDatetime = DateTimeOffset.UtcNow.ToLocalTime();
+
+			if (currentDatetime >= refreshTokenExpired)
 			{
-				Id = token.Id,
-				RefreshToken = newUserToken.RefreshToken,
-				UserName = username,
-			};
+				await _userRefreshTokenService
+					.DeleteUserRefreshTokens(maybeRefreshTokenModel.Id);
 
-			await _userRefreshTokenService.UpdateUserRefreshTokenAsync(userRefresh);
+				return StatusCode(405, "Refresh token expired!");
+			}
+			else if (currentDatetime >= tokenExpired)
+			{
+				User maybeUser =
+					_userProcessingService.GetUserByUserName(username);
 
-			return Ok(newUserToken);
+				UserToken newUserToken =
+					_userManageService.CreateUserToken(maybeUser);
+
+				if (newUserToken == null)
+				{
+					return Unauthorized("Invalid attempt!");
+				}
+
+				var userRefresh = new UserRefreshToken
+				{
+					Id = maybeRefreshTokenModel.Id,
+					RefreshToken = newUserToken.RefreshToken,
+					UserName = username,
+					ExpiredDate = currentDatetime.AddMinutes(
+									_tokenConfiguration.AccessTokenExpires)
+				};
+
+				await _userRefreshTokenService.UpdateUserRefreshTokenAsync(userRefresh);
+
+				return Ok(newUserToken);
+			}
+
+			return Ok("Normal");
 		}
 	}
 }
