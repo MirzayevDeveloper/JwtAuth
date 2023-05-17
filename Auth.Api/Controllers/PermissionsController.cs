@@ -9,7 +9,6 @@ namespace Auth.Api.Controllers
 {
 	[Route("api/permissions")]
 	[ApiController]
-	[Authorize]
 	public class PermissionsController : ControllerBase
 	{
 		private readonly IPermissionService _permissionService;
@@ -23,7 +22,7 @@ namespace Auth.Api.Controllers
 			_mapper = mapper;
 		}
 
-		[HttpPost]
+		[HttpPost, Authorize(Roles = "PostPermission"), AllowAnonymous]
 		public async ValueTask<IActionResult> PostPermissionAsync(PostPermissionDto permission)
 		{
 			Permission entity = _mapper.Map<Permission>(permission);
@@ -31,10 +30,10 @@ namespace Auth.Api.Controllers
 			entity = await
 				_permissionService.AddPermissionAsync(entity);
 
-			return Ok(entity);
+			return Ok(permission);
 		}
 
-		[HttpGet("{id}")]
+		[HttpGet("{id}"), Authorize(Roles = "GetPermission")]
 		public async ValueTask<IActionResult> GetPermissionAsync(Guid id)
 		{
 			Permission entity = await
@@ -46,7 +45,7 @@ namespace Auth.Api.Controllers
 			return Ok(dto);
 		}
 
-		[HttpGet]
+		[HttpGet, Authorize(Roles = "GetAllPermissions"), AllowAnonymous]
 		public IActionResult GetAllPermissions()
 		{
 			IQueryable<Permission> permissions =
@@ -58,7 +57,7 @@ namespace Auth.Api.Controllers
 			return Ok(entities);
 		}
 
-		[HttpPut]
+		[HttpPut, Authorize(Roles = "UpdatePermission")]
 		public async ValueTask<IActionResult> PutPermissionAsync(UpdatePermissionDto permission)
 		{
 			Permission entity =
@@ -69,7 +68,7 @@ namespace Auth.Api.Controllers
 			return Ok(permission);
 		}
 
-		[HttpDelete]
+		[HttpDelete, Authorize(Roles = "DeletePermission")]
 		public async ValueTask<IActionResult> DeletePermissionAsync(Guid id)
 		{
 			Permission entity = await

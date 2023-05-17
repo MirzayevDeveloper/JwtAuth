@@ -5,6 +5,8 @@ namespace Auth.Domain.Entities.RolePermissions
 {
 	public class RolePermission
 	{
+		public Guid Id { get; set; }
+
 		public Guid RoleId { get; set; }
 		public Role Role { get; set; }
 

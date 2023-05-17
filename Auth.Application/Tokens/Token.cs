@@ -32,12 +32,21 @@ namespace Auth.Application.Services.Tokens
 				new SigningCredentials(
 					securityKey, SecurityAlgorithms.HmacSha256);
 
+			var claimList = new List<Claim>();
+
+			if (user.UserRoles != null)
+			{
+				foreach (var item in user.UserRoles)
+				{
+					claimList.Add(new Claim(ClaimTypes.Role, item.Role.Name));
+				}
+			}
+
 			var claims = new Claim[]
 			{
 				new Claim(ClaimTypes.Name, user.UserName),
 				new Claim("Password", user.Password),
 				new Claim(ClaimTypes.Email, user.Email),
-				new Claim(ClaimTypes.Role, "GetAll")
 			};
 
 			var token = new JwtSecurityToken(

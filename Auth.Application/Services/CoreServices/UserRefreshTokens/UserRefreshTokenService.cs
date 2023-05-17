@@ -71,10 +71,10 @@ namespace Auth.Application.Services.CoreServices.UserRefreshTokens
 
 		public async ValueTask<UserRefreshToken> UpdateUserRefreshTokenAsync(UserRefreshToken userRefresh)
 		{
-			UserRefreshToken maybeRefreshToken = 
+			UserRefreshToken maybeRefreshToken =
 				await _context.UpdateAsync<UserRefreshToken>(userRefresh);
 
-			if(maybeRefreshToken == null)
+			if (maybeRefreshToken == null)
 			{
 				throw new ArgumentNullException(nameof(maybeRefreshToken));
 			}

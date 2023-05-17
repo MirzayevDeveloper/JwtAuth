@@ -1,5 +1,4 @@
-﻿using System.Security.Claims;
-using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
+﻿using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Application.Interfaces.ServiceInterfaces.ManageServiceInterfaces;
 using Auth.Domain.Entities.Tokens;
 using Auth.Domain.Entities.Users;

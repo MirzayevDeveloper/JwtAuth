@@ -66,6 +66,9 @@ namespace Auth.Infrastructure.Migrations
                     b.Property<Guid>("PermissionId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
                     b.HasKey("RoleId", "PermissionId");
 
                     b.HasIndex("PermissionId");
@@ -119,6 +122,9 @@ namespace Auth.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
                     b.HasKey("UserId", "RoleId");

@@ -1,5 +1,7 @@
-﻿using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
+﻿using Auth.Application.DTOs.Roles;
+using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Domain.Entities.Roles;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,53 +13,66 @@ namespace Auth.Api.Controllers
 	public class RolesController : ControllerBase
 	{
 		private readonly IRoleService _roleService;
+		private readonly IMapper _mapper;
 
-		public RolesController(IRoleService roleService)
+		public RolesController(
+			IRoleService roleService,
+			IMapper mapper)
 		{
 			_roleService = roleService;
+			_mapper = mapper;
 		}
 
-		[HttpPost]
-		public async ValueTask<IActionResult> PostRoleAsync(Role role)
+		[HttpPost, Authorize(Roles = "PostRole"), AllowAnonymous]
+		public async ValueTask<IActionResult> PostRoleAsync(PostRoleDto dto)
 		{
-			role.Id = Guid.NewGuid();
+			Role entity = _mapper.Map<Role>(dto);
 
-			Role entity = await _roleService.AddRoleAsync(role);
+			entity = await _roleService.AddRoleAsync(entity);
 
-			return Ok(entity);
+			return Ok(dto);
 		}
 
-		[HttpGet("{id}")]
+		[HttpGet("{id}"), Authorize(Roles = "GetRole")]
 		public async ValueTask<IActionResult> GetRoleAsync(Guid id)
 		{
 			Role entity = await _roleService.GetRoleByIdAsync(id);
 
-			return Ok(entity);
+			GetRoleDto dto = _mapper.Map<GetRoleDto>(entity);
+
+			return Ok(dto);
 		}
 
-		[HttpGet]
+		[HttpGet, Authorize(Roles = "GetAllRoles"), AllowAnonymous]
 		public IActionResult GetAllRoles()
 		{
 			IQueryable<Role> entities = _roleService.GetAllRoles();
 
-			return Ok(entities);
+			List<GetRoleDto> roles =
+				_mapper.Map<List<GetRoleDto>>(entities);
+
+			return Ok(roles);
 		}
 
 
-		[HttpPut]
-		public async ValueTask<IActionResult> PutRoleAsync(Role role)
+		[HttpPut, Authorize(Roles = "UpdateRole")]
+		public async ValueTask<IActionResult> PutRoleAsync(UpdateRoleDto dto)
 		{
-			Role entity = await _roleService.UpdateRoleAsync(role);
+			Role entity = _mapper.Map<Role>(dto);
+
+			entity = await _roleService.UpdateRoleAsync(entity);
 
 			return Ok(entity);
 		}
 
-		[HttpDelete]
+		[HttpDelete, Authorize(Roles = "DeleteRole")]
 		public async ValueTask<IActionResult> DeleteRoleAsync(Guid id)
 		{
 			Role entity = await _roleService.DeleteRoleAsync(id);
 
-			return Ok(entity);
+			DeleteRoleDto dto = _mapper.Map<DeleteRoleDto>(entity);
+
+			return Ok(dto);
 		}
 	}
 }

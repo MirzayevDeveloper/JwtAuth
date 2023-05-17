@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Auth.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230516160103_Initial")]
+    [Migration("20230517041523_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -69,6 +69,9 @@ namespace Auth.Infrastructure.Migrations
                     b.Property<Guid>("PermissionId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
                     b.HasKey("RoleId", "PermissionId");
 
                     b.HasIndex("PermissionId");
@@ -122,6 +125,9 @@ namespace Auth.Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("RoleId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
                     b.HasKey("UserId", "RoleId");

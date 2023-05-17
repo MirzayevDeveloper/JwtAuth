@@ -68,7 +68,7 @@ namespace Auth.Api.Controllers
 			return Ok(user);
 		}
 
-		[HttpGet("{id}")]
+		[HttpGet("{id}"), Authorize(Roles = "GetUser")]
 		public async ValueTask<IActionResult> GetUserAsync(Guid id)
 		{
 			User maybeUser = await _userService.GetUserByIdAsync(id);
@@ -78,7 +78,7 @@ namespace Auth.Api.Controllers
 			return Ok(maybeUser);
 		}
 
-		[HttpGet]
+		[HttpGet, Authorize(Roles = "GetAllUsers")]
 		public IActionResult GetAllUsers()
 		{
 			IQueryable<User> users = _userService.GetAllUsers();
@@ -89,7 +89,7 @@ namespace Auth.Api.Controllers
 			return Ok(entities);
 		}
 
-		[HttpPut]
+		[HttpPut, Authorize("UpdateUser")]
 		public async ValueTask<IActionResult> PutUserAsync([FromBody] UpdateUserDto user)
 		{
 			User entity = _mapper.Map<User>(user);
@@ -99,7 +99,7 @@ namespace Auth.Api.Controllers
 			return Ok(user);
 		}
 
-		[HttpDelete]
+		[HttpDelete, Authorize(Roles = "DeleteAccount")]
 		public async ValueTask<IActionResult> DeleteUserAsync([FromBody] DeleteUserDto user)
 		{
 			Request.Headers.TryGetValue("Authorization", out var authorization);
@@ -173,7 +173,7 @@ namespace Auth.Api.Controllers
 			UserRefreshToken maybeRefreshTokenModel =
 				await _refreshTokenProcessingService.GetRefreshToken(token);
 
-			if(maybeRefreshTokenModel == null)
+			if (maybeRefreshTokenModel == null)
 			{
 				return Unauthorized("Invalid attempt!");
 			}
