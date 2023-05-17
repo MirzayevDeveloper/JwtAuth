@@ -1,11 +1,13 @@
 ﻿using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Domain.Entities.Roles;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.Api.Controllers
 {
 	[Route("api/roles")]
 	[ApiController]
+	[Authorize]
 	public class RolesController : ControllerBase
 	{
 		private readonly IRoleService _roleService;

@@ -78,7 +78,7 @@ namespace Auth.Api.Controllers
 			return Ok(maybeUser);
 		}
 
-		[HttpGet, Authorize]
+		[HttpGet]
 		public IActionResult GetAllUsers()
 		{
 			IQueryable<User> users = _userService.GetAllUsers();

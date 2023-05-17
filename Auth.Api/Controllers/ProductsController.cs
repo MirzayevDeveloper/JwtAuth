@@ -1,11 +1,13 @@
 ﻿using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Domain.Entities.Products;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.Api.Controllers
 {
 	[Route("api/products")]
 	[ApiController]
+	[Authorize]
 	public class ProductsController : ControllerBase
 	{
 		private readonly IProductService _productService;

@@ -2,12 +2,14 @@
 using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Domain.Entities.Permissions;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.Api.Controllers
 {
 	[Route("api/permissions")]
 	[ApiController]
+	[Authorize]
 	public class PermissionsController : ControllerBase
 	{
 		private readonly IPermissionService _permissionService;
