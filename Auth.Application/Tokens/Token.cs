@@ -49,10 +49,12 @@ namespace Auth.Application.Services.Tokens
 				new Claim(ClaimTypes.Email, user.Email),
 			};
 
+			claimList.AddRange(claims);
+
 			var token = new JwtSecurityToken(
 				issuer: _tokenConfiguration.Issuer,
 				audience: _tokenConfiguration.Audience,
-				claims: claims,
+				claims: claimList,
 				expires: DateTime.UtcNow.AddMinutes(_tokenConfiguration.AccessTokenExpires),
 				signingCredentials: credentials
 				);

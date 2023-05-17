@@ -22,7 +22,7 @@ namespace Auth.Api.Controllers
 			_mapper = mapper;
 		}
 
-		[HttpPost, Authorize(Roles = "PostPermission"), AllowAnonymous]
+		[HttpPost, Authorize(Roles = "PostPermission")]
 		public async ValueTask<IActionResult> PostPermissionAsync(PostPermissionDto permission)
 		{
 			Permission entity = _mapper.Map<Permission>(permission);

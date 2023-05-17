@@ -31,7 +31,7 @@ namespace Auth.Api.Controllers
 			_rolePermissionService = rolePermissionService;
 		}
 
-		[HttpPost, Authorize(Roles = "PostRole"), AllowAnonymous]
+		[HttpPost, Authorize(Roles = "PostRole")]
 		public async ValueTask<IActionResult> PostRoleAsync(PostRoleDto dto)
 		{
 			Role entity = _mapper.Map<Role>(dto);
