@@ -8,7 +8,9 @@ namespace Auth.Infrastructure.Persistence.EntityTypeConfigurations
 	{
 		public void Configure(EntityTypeBuilder<Role> builder)
 		{
-			builder.Navigation(e => e.UserRoles);
+			//builder.Navigation(e => e.UserRoles).AutoInclude();
+
+			builder.HasIndex(x => x.Name).IsUnique();
 		}
 	}
 }

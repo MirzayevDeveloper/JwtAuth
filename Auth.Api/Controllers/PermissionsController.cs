@@ -27,6 +27,14 @@ namespace Auth.Api.Controllers
 		{
 			Permission entity = _mapper.Map<Permission>(permission);
 
+			bool isExists = _permissionService.GetAllPermissions()
+				.FirstOrDefault(x => x.ActionName.Equals(permission.ActionName)) != null;
+
+			if(isExists)
+			{
+				return BadRequest("Already exists!");
+			}
+
 			entity = await
 				_permissionService.AddPermissionAsync(entity);
 

@@ -13,10 +13,7 @@ namespace Auth.Application.Services.CoreServices.Roles
 
 		public async ValueTask<Role> AddRoleAsync(Role role)
 		{
-			Role maybeRole =
-				await _context.AddAsync<Role>(role);
-
-			return maybeRole;
+			return await _context.AddAsync<Role>(role); ;
 		}
 
 		public async ValueTask<Role> GetRoleByIdAsync(Guid roleId)

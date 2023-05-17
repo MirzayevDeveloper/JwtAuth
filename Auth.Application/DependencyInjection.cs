@@ -6,9 +6,11 @@ using Auth.Application.Interfaces.ServiceInterfaces.ProcessingServicesInterfaces
 using Auth.Application.Interfaces.TokenServiceInterfaces;
 using Auth.Application.Services.CoreServices.Permissions;
 using Auth.Application.Services.CoreServices.Products;
+using Auth.Application.Services.CoreServices.RolePermissions;
 using Auth.Application.Services.CoreServices.Roles;
 using Auth.Application.Services.CoreServices.Security;
 using Auth.Application.Services.CoreServices.UserRefreshTokens;
+using Auth.Application.Services.CoreServices.UserRoles;
 using Auth.Application.Services.CoreServices.Users;
 using Auth.Application.Services.ManageServices.Users;
 using Auth.Application.Services.ProcessingServices.RefreshTokens;
@@ -35,6 +37,8 @@ namespace Auth.Application
 			services.AddTransient<IUserProcessingService, UserProcessingService>();
 			services.AddTransient<IUserRefreshTokenService, UserRefreshTokenService>();
 			services.AddTransient<IRefreshTokenProcessingServiceInterface, RefreshTokenProcessingInterface>();
+			services.AddTransient<IRolePermissionService, RolePermissionService>();
+			services.AddTransient<IUserRoleService, UserRoleService>();
 
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 				.AddJwtBearer(options =>

@@ -1,5 +1,7 @@
 ﻿using Auth.Application.DTOs.Roles;
 using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
+using Auth.Domain.Entities.Permissions;
+using Auth.Domain.Entities.RolePermissions;
 using Auth.Domain.Entities.Roles;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -12,15 +14,21 @@ namespace Auth.Api.Controllers
 	[Authorize]
 	public class RolesController : ControllerBase
 	{
-		private readonly IRoleService _roleService;
 		private readonly IMapper _mapper;
+		private readonly IRoleService _roleService;
+		private readonly IPermissionService _permissionService;
+		private readonly IRolePermissionService _rolePermissionService;
 
 		public RolesController(
+			IMapper mapper,
 			IRoleService roleService,
-			IMapper mapper)
+			IPermissionService permissionService,
+			IRolePermissionService rolePermissionService)
 		{
-			_roleService = roleService;
 			_mapper = mapper;
+			_roleService = roleService;
+			_permissionService = permissionService;
+			_rolePermissionService = rolePermissionService;
 		}
 
 		[HttpPost, Authorize(Roles = "PostRole"), AllowAnonymous]
@@ -28,7 +36,39 @@ namespace Auth.Api.Controllers
 		{
 			Role entity = _mapper.Map<Role>(dto);
 
+			entity.Id = Guid.NewGuid();
+
+			IQueryable<Permission> permissions =
+				_permissionService.GetAllPermissions();
+
+			var listOfPermission = new List<Permission>();
+
+			foreach (var item in dto.Permissions)
+			{
+				Permission per =
+					permissions.FirstOrDefault(
+						x => x.ActionName.Equals(item));
+
+				if (per == null)
+				{
+					return NotFound($"Not found {item} permission!");
+				}
+				else
+				{
+					listOfPermission.Add(per);
+				}
+			}
+
 			entity = await _roleService.AddRoleAsync(entity);
+
+			foreach (var item in listOfPermission)
+			{
+				await _rolePermissionService.AddRolePermissionAsync(new RolePermission
+				{
+					Permission = item,
+					Role = entity,
+				});
+			}
 
 			return Ok(dto);
 		}

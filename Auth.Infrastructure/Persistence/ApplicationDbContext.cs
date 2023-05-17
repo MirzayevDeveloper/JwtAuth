@@ -83,6 +83,9 @@ namespace Auth.Infrastructure.Persistence
 			modelBuilder.ApplyConfiguration(
 				new UserRefreshTokenEntityTypeConfiguration());
 
+			modelBuilder.ApplyConfiguration(
+				new PermissionEntityTypeConfiguration());
+
 			base.OnModelCreating(modelBuilder);
 		}
 	}
