@@ -24,6 +24,7 @@ namespace Auth.Infrastructure.Mapping
 			CreateMap<User, GetUserDto>().ReverseMap();
 			CreateMap<User, UpdateUserDto>().ReverseMap();
 			CreateMap<User, DeleteUserDto>().ReverseMap();
+			CreateMap<User, GetAllUserDto>().ReverseMap();
 
 			CreateMap<Product, PostProductDto>().ReverseMap();
 			CreateMap<Product, GetProductDto>().ReverseMap();
