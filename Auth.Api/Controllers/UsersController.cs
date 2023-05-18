@@ -91,7 +91,7 @@ namespace Auth.Api.Controllers
 			{
 				foreach (var item2 in entities)
 				{
-					if(item.Id == item2.Id)
+					if (item.Id == item2.Id)
 					{
 						var a = item.UserRoles.ToList();
 
@@ -148,7 +148,7 @@ namespace Auth.Api.Controllers
 			}
 
 			maybeUser = await _userService.GetUserByIdAsync(maybeUser.Id);
-			
+
 			UserRefreshToken userRefresh = await _refreshTokenProcessingService
 							.GetRefreshTokenByUsername(maybeUser.UserName);
 
@@ -249,6 +249,7 @@ namespace Auth.Api.Controllers
 			}
 
 			return Ok("Normal");
+
 		}
 	}
 }

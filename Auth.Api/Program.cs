@@ -12,21 +12,24 @@ namespace Auth.Api
 		{
 			AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
+			var builder = WebApplication.CreateBuilder(args);
+
 			Log.Logger = new LoggerConfiguration()
-				.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
 				.Enrich.FromLogContext()
-				.WriteTo.Console()
-				.WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+				.ReadFrom.Configuration(builder.Configuration)
 				.CreateLogger();
+				//.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+				//.WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+				//.WriteTo.PostgreSQL("", "", builder.Configuration)
 
 			try
 			{
 				Log.Information("Start web host");
-				CreateHostBuilder(args);
+				Builder(builder);
 			}
 			catch (Exception ex)
 			{
-				Log.Fatal(ex, "Host terminated unexpectedly");
+				Log.Fatal(ex, "Error");
 			}
 			finally
 			{
@@ -34,10 +37,8 @@ namespace Auth.Api
 			}
 		}
 
-		private static void CreateHostBuilder(string[] args)
+		private static void Builder(WebApplicationBuilder builder)
 		{
-			var builder = WebApplication.CreateBuilder(args);
-
 			builder.Services.AddControllers();
 			builder.Services.AddEndpointsApiExplorer();
 			builder.Services.AddApplication(builder.Configuration);
@@ -69,7 +70,7 @@ namespace Auth.Api
 					   }
 					},
 					new string[]{}
-				} });
+				}});
 			});
 
 			var app = builder.Build();
