@@ -2,7 +2,6 @@ using Auth.Application;
 using Auth.Infrastructure;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using Serilog.Events;
 
 namespace Auth.Api
 {
@@ -18,10 +17,6 @@ namespace Auth.Api
 				.Enrich.FromLogContext()
 				.ReadFrom.Configuration(builder.Configuration)
 				.CreateLogger();
-				//.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-				//.WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
-				//.WriteTo.PostgreSQL("", "", builder.Configuration)
-
 			try
 			{
 				Log.Information("Start web host");
@@ -29,7 +24,8 @@ namespace Auth.Api
 			}
 			catch (Exception ex)
 			{
-				Log.Fatal(ex, "Error");
+				string message = "Xatolik ruy berdi";
+				Log.Fatal(ex, message);
 			}
 			finally
 			{
