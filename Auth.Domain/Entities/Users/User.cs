@@ -12,6 +12,8 @@ namespace Auth.Domain.Entities.Users
 		public string Email { get; set; }
 		public string UserName { get; set; }
 		public string Password { get; set; }
-		public virtual ICollection<UserRole> UserRoles { get; set; }
+		[NotMapped]
+        public List<string> Roles { get; set; }
+        public virtual ICollection<UserRole> UserRoles { get; set; }
 	}
 }

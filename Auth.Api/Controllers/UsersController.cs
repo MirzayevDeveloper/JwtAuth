@@ -9,6 +9,7 @@ using Auth.Domain.Entities.Users;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace Auth.Api.Controllers
 {
@@ -83,13 +84,29 @@ namespace Auth.Api.Controllers
 		{
 			IQueryable<User> users = _userService.GetAllUsers();
 
-			List<GetUserDto> entities =
-				_mapper.Map<List<GetUserDto>>(users.ToList());
+			List<GetAllUserDto> entities =
+				_mapper.Map<List<GetAllUserDto>>(users.ToList());
+
+			foreach (var item in users)
+			{
+				foreach (var item2 in entities)
+				{
+					if(item.Id == item2.Id)
+					{
+						var a = item.UserRoles.ToList();
+
+						foreach (var z in a)
+						{
+							item2.Role = z.Role.Name;
+						}
+					}
+				}
+			}
 
 			return Ok(entities);
 		}
 
-		[HttpPut, Authorize("UpdateUser")]
+		[HttpPut, Authorize(Roles = "UpdateUser")]
 		public async ValueTask<IActionResult> PutUserAsync([FromBody] UpdateUserDto user)
 		{
 			User entity = _mapper.Map<User>(user);
@@ -99,7 +116,7 @@ namespace Auth.Api.Controllers
 			return Ok(user);
 		}
 
-		[HttpDelete, Authorize(Roles = "DeleteAccount")]
+		[HttpDelete, Authorize(Roles = "DeleteUser")]
 		public async ValueTask<IActionResult> DeleteUserAsync([FromBody] DeleteUserDto user)
 		{
 			Request.Headers.TryGetValue("Authorization", out var authorization);
@@ -126,9 +143,12 @@ namespace Auth.Api.Controllers
 
 			if (maybeUser == null)
 			{
+				Log.Warning("Login User null");
 				return NotFound(userCredentials);
 			}
 
+			maybeUser = await _userService.GetUserByIdAsync(maybeUser.Id);
+			
 			UserRefreshToken userRefresh = await _refreshTokenProcessingService
 							.GetRefreshTokenByUsername(maybeUser.UserName);
 

@@ -1,7 +1,11 @@
 ﻿using Auth.Application.Abstractions;
 using Auth.Application.Interfaces.ServiceInterfaces.CoreServiceInterfaces;
 using Auth.Application.Interfaces.TokenServiceInterfaces;
+using Auth.Domain.Entities.RolePermissions;
+using Auth.Domain.Entities.Roles;
+using Auth.Domain.Entities.UserRoles;
 using Auth.Domain.Entities.Users;
+using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Application.Services.CoreServices.Users
 {
@@ -38,12 +42,48 @@ namespace Auth.Application.Services.CoreServices.Users
 
 			if (maybeUser == null) return null;
 
+			var roles =
+				_context.GetAll<UserRole>().ToList();
+
+			var userRoles = roles.Where(
+					x => x.UserId.Equals(userId)).ToList();
+
+			var getUserRoles = new List<Role>();
+
+			foreach (var item in userRoles)
+			{
+				getUserRoles.Add(_context.GetAll<Role>()
+					.FirstOrDefault(x => x.Id.Equals(item.RoleId)));
+			}
+
+			var rolePermissions = _context.GetAll<RolePermission>().Include(x => x.Role)
+				.Include(a => a.Permission).ToList();
+
+			maybeUser.Roles = new List<string>();
+
+			if (getUserRoles != null)
+			{
+				foreach (var item in getUserRoles)
+				{
+					foreach (var item1 in rolePermissions)
+					{
+						if (item1.Role.Name == item.Name)
+						{
+							maybeUser.Roles.Add(item1.Permission.ActionName);
+						}
+					}
+				}
+			}
+
 			return maybeUser;
 		}
 
 		public IQueryable<User> GetAllUsers()
 		{
-			return _context.GetAll<User>();
+			List<User> list = _context.GetAll<User>().Include(x => x.UserRoles).
+				ThenInclude(a =>a.Role).ToList();
+
+			return list.AsQueryable();
 		}
 
 		public async ValueTask<User> UpdateUserAsync(User user)

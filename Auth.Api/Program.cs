@@ -1,6 +1,8 @@
 using Auth.Application;
 using Auth.Infrastructure;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Events;
 
 namespace Auth.Api
 {
@@ -10,6 +12,30 @@ namespace Auth.Api
 		{
 			AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
+			Log.Logger = new LoggerConfiguration()
+				.MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+				.Enrich.FromLogContext()
+				.WriteTo.Console()
+				.WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+				.CreateLogger();
+
+			try
+			{
+				Log.Information("Start web host");
+				CreateHostBuilder(args);
+			}
+			catch (Exception ex)
+			{
+				Log.Fatal(ex, "Host terminated unexpectedly");
+			}
+			finally
+			{
+				Log.CloseAndFlush();
+			}
+		}
+
+		private static void CreateHostBuilder(string[] args)
+		{
 			var builder = WebApplication.CreateBuilder(args);
 
 			builder.Services.AddControllers();

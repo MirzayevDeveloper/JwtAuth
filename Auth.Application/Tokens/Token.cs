@@ -34,11 +34,11 @@ namespace Auth.Application.Services.Tokens
 
 			var claimList = new List<Claim>();
 
-			if (user.UserRoles != null)
+			if (user.Roles != null)
 			{
-				foreach (var item in user.UserRoles)
+				foreach (var item in user.Roles)
 				{
-					claimList.Add(new Claim(ClaimTypes.Role, item.Role.Name));
+					claimList.Add(new Claim(ClaimTypes.Role, item));
 				}
 			}
 
