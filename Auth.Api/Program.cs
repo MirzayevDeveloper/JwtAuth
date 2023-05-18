@@ -17,6 +17,7 @@ namespace Auth.Api
 				.Enrich.FromLogContext()
 				.ReadFrom.Configuration(builder.Configuration)
 				.CreateLogger();
+
 			try
 			{
 				Log.Information("Start web host");
