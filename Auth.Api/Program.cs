@@ -1,3 +1,4 @@
+using Auth.Api.GlobalExceptionHandler;
 using Auth.Application;
 using Auth.Infrastructure;
 using Microsoft.OpenApi.Models;
@@ -81,6 +82,8 @@ namespace Auth.Api
 			app.UseHttpsRedirection();
 			app.UseAuthentication();
 			app.UseAuthorization();
+			app.UseExceptionHandlerMiddleware();
+
 			app.MapControllers();
 			app.Run();
 		}

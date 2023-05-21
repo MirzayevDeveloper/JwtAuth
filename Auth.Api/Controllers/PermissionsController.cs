@@ -22,9 +22,11 @@ namespace Auth.Api.Controllers
 			_mapper = mapper;
 		}
 
-		[HttpPost, Authorize(Roles = "PostPermission")]
+		[HttpPost, Authorize(Roles = "PostPermission"), AllowAnonymous]
 		public async ValueTask<IActionResult> PostPermissionAsync(PostPermissionDto permission)
 		{
+			throw new ArgumentException("Ozimizi exception");
+
 			Permission entity = _mapper.Map<Permission>(permission);
 
 			bool isExists = _permissionService.GetAllPermissions()
